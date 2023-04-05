@@ -15,5 +15,5 @@ import java.util.Optional;
 @Mapper
 public interface CategoryDao extends Repository<Category, BigInteger>
 {
-    Optional<List<Category>> findAll(Specification<Category> spec);
+
 }

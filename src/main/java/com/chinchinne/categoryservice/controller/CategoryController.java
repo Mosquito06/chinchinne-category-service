@@ -5,6 +5,7 @@ import com.chinchinne.categoryservice.domain.entity.Category;
 import com.chinchinne.categoryservice.domain.model.Common;
 import com.chinchinne.categoryservice.domain.value.UserId;
 import com.chinchinne.categoryservice.model.CategoryDto;
+import com.chinchinne.categoryservice.repository.CategoryRepository;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,16 +26,19 @@ public class CategoryController
 
     ModelMapper modelMapper;
 
-    public CategoryController(CategoryDao categoryDao, ModelMapper modelMapper )
+    CategoryRepository categoryRepository;
+
+    public CategoryController(CategoryDao categoryDao, ModelMapper modelMapper, CategoryRepository categoryRepository)
     {
         this.categoryDao = categoryDao;
         this.modelMapper = modelMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping("/{userId}/categories")
     public ResponseEntity<List<CategoryDto>> getMemo(@PathVariable String userId)
     {
-        Optional<List<Category>> memo = categoryDao.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)));
+        Optional<List<Category>> memo = categoryRepository.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)));
 
         List<CategoryDto> res = memo.orElseGet(ArrayList::new).stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 

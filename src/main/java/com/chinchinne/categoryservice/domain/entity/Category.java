@@ -27,6 +27,9 @@ public class Category
     @Column( name = "CATEGORY_NAME" )
     private String categoryName;
 
+    @Column( name = "COLOR" )
+    private String color;
+
     @Column( name = "REG_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date regDate;
