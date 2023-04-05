@@ -23,6 +23,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+    hibernate:
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
