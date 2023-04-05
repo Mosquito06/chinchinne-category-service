@@ -2,6 +2,7 @@ package com.chinchinne.categoryservice.controller;
 
 import com.chinchinne.categoryservice.annotation.CategoryTest;
 import com.chinchinne.categoryservice.dao.CategoryDao;
+import com.chinchinne.categoryservice.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,9 @@ public class CategoryControllerTest
 
     @MockBean
     CategoryDao categoryDao;
+
+    @MockBean
+    CategoryRepository categoryRepository;
 
     // Static 지정했으나, User-service 생성 후 변경 필요
     final String userId = "967d6988-a1f0-11ed-a8fc-0242ac120002";
