@@ -67,5 +67,10 @@ public class Category
         this.modId = userId;
     }
 
-
+    public void removeCategory( UserId userId, Common delYn )
+    {
+        this.modDate = valueOf(LocalDateTime.now());
+        this.modId = userId;
+        this.delYn = delYn;
+    }
 }

@@ -91,4 +91,16 @@ public class CategoryController
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+
+    @DeleteMapping("{userId}/category")
+    public ResponseEntity<CategoryDto> deleteCategory(@PathVariable String userId, @RequestBody RequestCategory requestCategory)
+    {
+        requestCategory.setUserId(userId);
+
+        CategoryDto categoryDto = modelMapper.map(requestCategory, CategoryDto.class);
+
+        CategoryDto res = categoryService.removeCategory(categoryDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
 }
