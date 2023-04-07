@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +69,7 @@ public class CategoryController
     }
 
     @PostMapping("{userId}/category")
-    public ResponseEntity<CategoryDto> addAccount(@PathVariable String userId, @RequestBody @Valid RequestCategory requestCategory)
+    public ResponseEntity<CategoryDto> addCategory(@PathVariable String userId, @RequestBody @Valid RequestCategory requestCategory)
     {
         requestCategory.setUserId(userId);
 
@@ -81,5 +78,17 @@ public class CategoryController
         CategoryDto res = categoryService.createCategory(categoryDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
+    }
+
+    @PutMapping("{userId}/category")
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable String userId, @RequestBody @Valid RequestCategory requestCategory)
+    {
+        requestCategory.setUserId(userId);
+
+        CategoryDto categoryDto = modelMapper.map(requestCategory, CategoryDto.class);
+
+        CategoryDto res = categoryService.changeCategory(categoryDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import static java.sql.Timestamp.valueOf;
 
 @Entity
 @Table(name = "CATEGORY")
@@ -55,4 +58,14 @@ public class Category
         this.color = color;
         this.delYn = delYn;
     }
+
+    public void changeCategory( UserId userId, String categoryName, String color )
+    {
+        this.categoryName = categoryName;
+        this.color = color;
+        this.modDate = valueOf(LocalDateTime.now());
+        this.modId = userId;
+    }
+
+
 }
