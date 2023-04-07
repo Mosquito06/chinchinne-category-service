@@ -47,4 +47,12 @@ public class Category
 
     @Column( name = "DEL_YN")
     private Common delYn;
+
+    public Category(UserId userId, String categoryName, String color, Common delYn)
+    {
+        this.userId = userId;
+        this.categoryName = categoryName;
+        this.color = color;
+        this.delYn = delYn;
+    }
 }
