@@ -11,7 +11,9 @@ import com.chinchinne.categoryservice.repository.CategoryRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +45,16 @@ public class CategoryController
     }
 
     @GetMapping("/{userId}/categories")
-    public ResponseEntity<List<CategoryDto>> getMemo(@PathVariable String userId)
+    public ResponseEntity<List<CategoryDto>> getMemo(@PathVariable String userId, @RequestParam(required = false) String keywords)
     {
-        Optional<List<Category>> memo = categoryRepository.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)));
+        Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
+
+        if( !StringUtils.isEmpty(keywords) )
+        {
+            spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)).and(CategorySpecs.CategoryName(keywords));
+        }
+
+        Optional<List<Category>> memo = categoryRepository.findAll(spec);
 
         List<CategoryDto> res = memo.orElseGet(ArrayList::new).stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 

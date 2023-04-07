@@ -10,13 +10,26 @@ import java.math.BigInteger;
 public class CategorySpecs
 {
     public static Specification<Category> CategoryId(BigInteger categoryId)
-    {;
+    {
         return (root, query, builder) -> builder.equal(root.get("categoryId"), categoryId);
     }
 
     public static Specification<Category> UserId(UserId userId)
-    {;
+    {
         return (root, query, builder) -> builder.equal(root.get("userId").get("id"), userId.getId());
+    }
+
+    public static Specification<Category> CategoryName(String keywords)
+    {
+        return (root, query, builder) ->
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("%");
+            sb.append(keywords);
+            sb.append("%");
+
+            return builder.like(root.get("categoryName"), sb.toString());
+        };
     }
 
     public static Specification<Category> DelYn(Common delYn)
