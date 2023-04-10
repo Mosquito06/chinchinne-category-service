@@ -61,7 +61,7 @@ public class CategoryController
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @GetMapping("{userId}/category/{categoryId}")
+    @GetMapping("/{userId}/category/{categoryId}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable String userId, @PathVariable BigInteger categoryId)
     {
         List<Category> categories = categoryRepository.findAll(CategorySpecs.CategoryId(categoryId).and(CategorySpecs.DelYn(Common.NO)))
@@ -77,7 +77,7 @@ public class CategoryController
         return ResponseEntity.status(HttpStatus.OK).body(category);
     }
 
-    @PostMapping("{userId}/category")
+    @PostMapping("/{userId}/category")
     public ResponseEntity<CategoryDto> addCategory(@PathVariable String userId, @RequestBody @Valid RequestCategory requestCategory)
     {
         requestCategory.setUserId(userId);
@@ -89,7 +89,7 @@ public class CategoryController
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
-    @PutMapping("{userId}/category")
+    @PutMapping("/{userId}/category")
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable String userId, @RequestBody @Valid RequestCategory requestCategory)
     {
         requestCategory.setUserId(userId);
@@ -101,7 +101,7 @@ public class CategoryController
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @DeleteMapping("{userId}/category")
+    @DeleteMapping("/{userId}/category")
     public ResponseEntity<CategoryDto> deleteCategory(@PathVariable String userId, @RequestBody RequestCategory requestCategory)
     {
         requestCategory.setUserId(userId);
