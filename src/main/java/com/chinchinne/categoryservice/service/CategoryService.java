@@ -1,6 +1,5 @@
 package com.chinchinne.categoryservice.service;
 
-import com.chinchinne.categoryservice.domain.entity.Account;
 import com.chinchinne.categoryservice.domain.entity.Category;
 import com.chinchinne.categoryservice.domain.model.Common;
 import com.chinchinne.categoryservice.domain.value.CategoryId;
@@ -10,7 +9,6 @@ import com.chinchinne.categoryservice.model.CategoryDto;
 import com.chinchinne.categoryservice.model.ErrorCode;
 import com.chinchinne.categoryservice.repository.AccountRepository;
 import com.chinchinne.categoryservice.repository.CategoryRepository;
-import com.chinchinne.categoryservice.spec.AccountSpecs;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,10 +86,9 @@ public class CategoryService
 
         Category category = categories.get(0);
 
-        List<Account> accounts = accountRepository.findAll(AccountSpecs.CategoryId(new CategoryId(category.getCategoryId())).and(AccountSpecs.DelYn(Common.NO)))
-                                                  .orElseGet(ArrayList::new);
+        boolean exist = accountRepository.existByCategoryId(category.getUserId(), new CategoryId(category.getCategoryId()), category.getDelYn());
 
-        if( accounts.size() > 0 )
+        if( exist )
         {
             throw new CustomException(ErrorCode.USING_RECORD);
         }
