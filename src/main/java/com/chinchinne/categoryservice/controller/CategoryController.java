@@ -13,6 +13,8 @@ import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +22,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 public class CategoryController
 {
+    static final int PER_PAGE = 1;
+
     CategoryDao categoryDao;
 
     ModelMapper modelMapper;
@@ -45,20 +47,28 @@ public class CategoryController
     }
 
     @GetMapping("/{userId}/categories")
-    public ResponseEntity<List<CategoryDto>> getMemo(@PathVariable String userId, @RequestParam(required = false) String keywords)
+    public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false) String keywords)
     {
         Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
+        PageRequest pageReq = PageRequest.of( ( page - 1 ) * PER_PAGE, PER_PAGE);
 
         if( !StringUtils.isEmpty(keywords) )
         {
             spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)).and(CategorySpecs.CategoryName(keywords));
         }
 
-        Optional<List<Category>> memo = categoryRepository.findAll(spec);
+        Page<Category> pageRes = categoryRepository.findAll(spec, pageReq);
 
-        List<CategoryDto> res = memo.orElseGet(ArrayList::new).stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
+        List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        HashMap<String, Object> resHm = new HashMap<>();
+        resHm.put("categories", categories);
+        resHm.put("total", pageRes.getTotalElements());
+        resHm.put("totalPage", pageRes.getTotalPages());
+        resHm.put("perPage", PER_PAGE);
+        resHm.put("page", page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resHm);
     }
 
     @GetMapping("/{userId}/category/{categoryId}")
