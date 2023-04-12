@@ -36,9 +36,9 @@ public class CategoryControllerTest
     final String userId = "967d6988-a1f0-11ed-a8fc-0242ac120002";
 
     @Test
-    void getCategoriesTest() throws Exception
+    void getAllCategoriesTest() throws Exception
     {
-        mockMvc.perform(MockMvcRequestBuilders.get("/" + userId +"/categories"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/" + userId +"/all/categories"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
