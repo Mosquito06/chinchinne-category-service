@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService
@@ -76,31 +78,32 @@ public class CategoryService
     }
 
     @Transactional
-    public CategoryDto removeCategory(CategoryDto categoryDto)
+    public List<CategoryDto> removeCategory(List<CategoryDto> categoryDtos)
     {
-        List<Category> categories = categoryRepository.findAll(CategorySpecs.CategoryId(categoryDto.getId()).and(CategorySpecs.DelYn(Common.NO)))
-                                                      .orElseGet(ArrayList::new);
+        List<BigInteger> bigIntegerIds = categoryDtos.stream().map( dto -> dto.getId()).collect(Collectors.toList());
+        List<Category> categories = categoryRepository.findByCategoryIdInAndDelYn(bigIntegerIds, Common.NO).orElseGet(ArrayList::new);
 
         if( categories.isEmpty() )
         {
             throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
         }
 
-        Category category = categories.get(0);
+        List<CategoryId> categoryIds = categories.stream().map( category -> new CategoryId(category.getCategoryId()) ).collect(Collectors.toList());
 
-        boolean exist = accountRepository.existByCategoryId(category.getUserId(), new CategoryId(category.getCategoryId()), category.getDelYn());
+        boolean exist = accountRepository.existByCategoryIdIn(categories.get(0).getUserId(), categoryIds, Common.NO);
 
         if( exist )
         {
             throw new CustomException(ErrorCode.USING_RECORD);
         }
 
-        category.removeCategory
+        categoryRepository.removeByCategoryIdIn
         (
-             new UserId(categoryDto.getUserId())
+             new UserId(categoryDtos.get(0).getUserId())
+            ,bigIntegerIds
             ,Common.YES
         );
 
-        return modelMapper.map(category, CategoryDto.class);
+        return categories.stream().map( m -> modelMapper.map(m, CategoryDto.class) ).collect(Collectors.toList());
     }
 }

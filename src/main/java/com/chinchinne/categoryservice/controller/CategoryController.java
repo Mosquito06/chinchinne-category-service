@@ -22,13 +22,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 public class CategoryController
 {
-    static final int PER_PAGE = 10;
+    static final int PER_PAGE = 5;
 
     CategoryDao categoryDao;
 
@@ -61,7 +63,7 @@ public class CategoryController
     public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false) String keywords)
     {
         Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
-        PageRequest pageReq = PageRequest.of( ( page - 1 ) * PER_PAGE, PER_PAGE);
+        PageRequest pageReq = PageRequest.of( page - 1 , PER_PAGE);
 
         if( !StringUtils.isEmpty(keywords) )
         {
@@ -122,14 +124,16 @@ public class CategoryController
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
-    @DeleteMapping("/{userId}/category")
-    public ResponseEntity<CategoryDto> deleteCategory(@PathVariable String userId, @RequestBody RequestCategory requestCategory)
+    @DeleteMapping("/{userId}/categories")
+    public ResponseEntity<List<CategoryDto>> deleteCategory(@PathVariable String userId, @RequestBody List<RequestCategory> requestCategories)
     {
-        requestCategory.setUserId(userId);
+        List<CategoryDto> req = requestCategories.stream().map( reqCategory ->
+        {
+            reqCategory.setUserId(userId);
+            return modelMapper.map(reqCategory, CategoryDto.class);
+        }).collect( Collectors.toList() );
 
-        CategoryDto categoryDto = modelMapper.map(requestCategory, CategoryDto.class);
-
-        CategoryDto res = categoryService.removeCategory(categoryDto);
+        List<CategoryDto> res = categoryService.removeCategory(req);
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
