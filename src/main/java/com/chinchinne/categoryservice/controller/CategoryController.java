@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 public class CategoryController
 {
-    static final int PER_PAGE = 1;
+    static final int PER_PAGE = 10;
 
     CategoryDao categoryDao;
 
