@@ -30,8 +30,11 @@ public class Category
     @Column( name = "CATEGORY_NAME" )
     private String categoryName;
 
-    @Column( name = "COLOR" )
-    private String color;
+    @Column( name = "BACK_COLOR" )
+    private String backColor;
+
+    @Column( name = "TEXT_COLOR" )
+    private String textColor;
 
     @Column( name = "REG_DATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -51,18 +54,20 @@ public class Category
     @Column( name = "DEL_YN")
     private Common delYn;
 
-    public Category(UserId userId, String categoryName, String color, Common delYn)
+    public Category(UserId userId, String categoryName, String backColor, String textColor, Common delYn)
     {
         this.userId = userId;
         this.categoryName = categoryName;
-        this.color = color;
+        this.backColor = backColor;
+        this.textColor = textColor;
         this.delYn = delYn;
     }
 
-    public void changeCategory( UserId userId, String categoryName, String color )
+    public void changeCategory( UserId userId, String categoryName, String backColor, String textColor )
     {
         this.categoryName = categoryName;
-        this.color = color;
+        this.backColor = backColor;
+        this.textColor = textColor;
         this.modDate = valueOf(LocalDateTime.now());
         this.modId = userId;
     }

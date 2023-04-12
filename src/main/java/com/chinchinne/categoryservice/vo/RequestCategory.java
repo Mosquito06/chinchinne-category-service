@@ -1,8 +1,6 @@
 package com.chinchinne.categoryservice.vo;
 
 import com.chinchinne.categoryservice.domain.model.Common;
-import com.chinchinne.categoryservice.domain.value.UserId;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +19,7 @@ public class RequestCategory
     @NotEmpty
     private String name;
 
-    private String color;
+    private String backColor;
+    private String textColor;
     private Common delYn;
 }

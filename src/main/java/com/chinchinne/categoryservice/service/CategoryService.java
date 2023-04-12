@@ -42,7 +42,8 @@ public class CategoryService
         (
              new UserId(categoryDto.getUserId())
             ,categoryDto.getName()
-            ,categoryDto.getColor()
+            ,categoryDto.getBackColor()
+            ,categoryDto.getTextColor()
             ,Common.NO
         );
 
@@ -67,7 +68,8 @@ public class CategoryService
         (
              new UserId(categoryDto.getUserId())
             ,categoryDto.getName()
-            ,categoryDto.getColor()
+            ,categoryDto.getBackColor()
+            ,categoryDto.getTextColor()
         );
 
         return modelMapper.map(category, CategoryDto.class);
