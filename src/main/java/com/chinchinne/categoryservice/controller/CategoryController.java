@@ -46,6 +46,17 @@ public class CategoryController
         this.categoryRepository = categoryRepository;
     }
 
+    @GetMapping("/{userId}/all/categories")
+    public ResponseEntity<List<CategoryDto>> getAllCategories(@PathVariable String userId)
+    {
+        List<Category> categories = categoryRepository.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)))
+                                                      .orElseGet(ArrayList::new);
+
+        List<CategoryDto> res = categories.stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
     @GetMapping("/{userId}/categories")
     public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false) String keywords)
     {
