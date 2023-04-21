@@ -1,4 +1,4 @@
-package com.chinchinne.categoryservice.repository;
+package com.chinchinne.categoryservice.repository.jpa;
 
 
 import com.chinchinne.categoryservice.domain.entity.Account;

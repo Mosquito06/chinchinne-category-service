@@ -1,6 +1,8 @@
 package com.chinchinne.categoryservice;
 
 import com.chinchinne.categoryservice.annotation.CategoryTest;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ class CategoryServiceApplicationTests
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    MongoClient mongoClient;
+
     @Test
     void DBConnectionTest()
     {
@@ -33,6 +38,13 @@ class CategoryServiceApplicationTests
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void MongoDbConnectionTest()
+    {
+        MongoDatabase chinchinne = mongoClient.getDatabase("chinchinne");
+        assertNotNull(chinchinne);
     }
 
 }

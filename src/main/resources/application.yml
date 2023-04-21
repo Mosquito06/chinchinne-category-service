@@ -27,6 +27,12 @@ spring:
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017
+      database: chinchinne
+      username: backend
+      password: backend
 
 logging:
   level:
@@ -35,6 +41,9 @@ logging:
         sql: off
       springframework:
         web: debug
+        data:
+          mongodb:
+            core: debug
     sql: off
     jdbc: off
     jdbc.sqlonly: info

@@ -2,10 +2,9 @@ package com.chinchinne.categoryservice.controller;
 
 import com.chinchinne.categoryservice.annotation.CategoryTest;
 import com.chinchinne.categoryservice.dao.CategoryDao;
-import com.chinchinne.categoryservice.repository.CategoryRepository;
+import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

@@ -7,7 +7,7 @@ import com.chinchinne.categoryservice.domain.value.UserId;
 import com.chinchinne.categoryservice.exception.CustomException;
 import com.chinchinne.categoryservice.model.CategoryDto;
 import com.chinchinne.categoryservice.model.ErrorCode;
-import com.chinchinne.categoryservice.repository.CategoryRepository;
+import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
