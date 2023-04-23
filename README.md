@@ -22,6 +22,7 @@
   <img src="https://img.shields.io/badge/Java-6DB33F?style=for-the-badge">
   <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white">
   <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring Data Mongo-47A248?style=for-the-badge&logo=mongodb&logoColor=white">
   <img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=JUnit5&logoColor=white">
   <img src="https://img.shields.io/badge/MyBatis-C4242B?style=for-the-badge">
 </div>
