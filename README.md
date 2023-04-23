@@ -1,4 +1,4 @@
-## :closed_book: 친친네 가계부_Account_Service(업데이트 중)
+## :closed_book: 친친네 가계부_Category_Service(업데이트 중)
 
 ## :bulb: 개요
 
