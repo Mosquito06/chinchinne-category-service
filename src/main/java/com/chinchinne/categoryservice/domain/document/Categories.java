@@ -16,6 +16,7 @@ import java.util.List;
 public class Categories
 {
     @Id
+    @Field("_id")
     private ObjectId categoriesId;
 
     @Field("userId")

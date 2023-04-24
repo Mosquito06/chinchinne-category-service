@@ -15,22 +15,29 @@ import com.chinchinne.categoryservice.repository.jpa.AccountRepository;
 import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.repository.mongo.CategoryMongoRepository;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
-import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.sql.Timestamp.valueOf;
 
 @Service
 public class CategoryService
 {
     ModelMapper modelMapper;
+
+    MongoTemplate mongoTemplate;
 
     AccountRepository accountRepository;
 
@@ -39,9 +46,10 @@ public class CategoryService
     CategoryMongoRepository categoryMongoRepository;
 
     @Autowired
-    public CategoryService(AccountRepository accountRepository, CategoryRepository categoryRepository, CategoryMongoRepository categoryMongoRepository, ModelMapper modelMapper)
+    public CategoryService(AccountRepository accountRepository, CategoryRepository categoryRepository, CategoryMongoRepository categoryMongoRepository, MongoTemplate mongoTemplate, ModelMapper modelMapper)
     {
         this.modelMapper = modelMapper;
+        this.mongoTemplate = mongoTemplate;
         this.accountRepository = accountRepository;
         this.categoryRepository = categoryRepository;
         this.categoryMongoRepository = categoryMongoRepository;
@@ -61,22 +69,17 @@ public class CategoryService
 
         categoryRepository.save(category);
 
-        Categories categories = categoryMongoRepository.findByUserId(categoryDto.getUserId()).orElseGet(Categories::new);
-
+        // MongoDB Upsert
         MColor color = new MColor(categoryDto.getBackColor(), categoryDto.getTextColor());
-        MCategory mCategory = new MCategory(categoryDto.getName(), color);
+        MCategory mCategory = new MCategory(categoryDto.getName(), color, valueOf(LocalDateTime.now()));
 
-        // 수정 혹은 저장 분기 처리 필요
-        if( StringUtils.isEmpty(categories.getUserId()) )
-        {
-            categories = categories = new Categories(categoryDto.getUserId(), Arrays.asList(mCategory));
-        }
-        else
-        {
-            categories.getCategories().add(mCategory);
-        }
+        Query query = new Query(Criteria.where("userId").is(categoryDto.getUserId()));
+        Update update = new Update();
 
-        categoryMongoRepository.save(categories);
+        update.setOnInsert("userId", categoryDto.getUserId());
+        update.addToSet("categories", mCategory);
+
+        mongoTemplate.upsert(query, update, Categories.class);
 
         return modelMapper.map(category, CategoryDto.class);
     }

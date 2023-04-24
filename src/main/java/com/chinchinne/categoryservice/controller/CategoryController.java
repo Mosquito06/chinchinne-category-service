@@ -8,6 +8,7 @@ import com.chinchinne.categoryservice.exception.CustomException;
 import com.chinchinne.categoryservice.model.CategoryDto;
 import com.chinchinne.categoryservice.model.ErrorCode;
 import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
+import com.chinchinne.categoryservice.repository.mongo.CategoryMongoRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
@@ -40,12 +41,15 @@ public class CategoryController
 
     CategoryRepository categoryRepository;
 
-    public CategoryController(CategoryDao categoryDao, ModelMapper modelMapper, CategoryRepository categoryRepository, CategoryService categoryService)
+    CategoryMongoRepository categoryMongoRepository;
+
+    public CategoryController(CategoryDao categoryDao, ModelMapper modelMapper, CategoryRepository categoryRepository, CategoryService categoryService, CategoryMongoRepository categoryMongoRepository)
     {
         this.categoryDao = categoryDao;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
+        this.categoryMongoRepository = categoryMongoRepository;
     }
 
     @GetMapping("/{userId}/all/categories")
@@ -74,7 +78,22 @@ public class CategoryController
 
         List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 
+//        Specification<Categories> spec = CategoriesSpec.UserId(userId);
+//        PageRequest pageReq = PageRequest.of( page - 1 , PER_PAGE);
+
+//        if( !StringUtils.isEmpty(keywords) )
+//        {
+//            spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)).and(CategorySpecs.CategoryName(keywords));
+//        }
+
+        //Page<Categories> pageRes = categoryMongoRepository.findAll(spec, pageReq);
+
+        //Page<Categories> pageRes = categoryMongoRepository.findAll(pageReq);
+
+        //List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
+
         HashMap<String, Object> resHm = new HashMap<>();
+        //resHm.put("categories", pageRes.getContent());
         resHm.put("categories", categories);
         resHm.put("total", pageRes.getTotalElements());
         resHm.put("totalPage", pageRes.getTotalPages());
