@@ -1,6 +1,8 @@
 package com.chinchinne.categoryservice.controller;
 
 import com.chinchinne.categoryservice.dao.CategoryDao;
+import com.chinchinne.categoryservice.domain.document.Categories;
+import com.chinchinne.categoryservice.domain.document.MCategory;
 import com.chinchinne.categoryservice.domain.entity.Category;
 import com.chinchinne.categoryservice.domain.model.Common;
 import com.chinchinne.categoryservice.domain.value.UserId;
@@ -10,6 +12,7 @@ import com.chinchinne.categoryservice.model.ErrorCode;
 import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.repository.mongo.CategoryMongoRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
+import com.chinchinne.categoryservice.spec.CategoriesSpec;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
 import org.apache.commons.lang.StringUtils;
@@ -66,37 +69,33 @@ public class CategoryController
     @GetMapping("/{userId}/categories")
     public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false) String keywords)
     {
-        Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
-        PageRequest pageReq = PageRequest.of( page - 1 , PER_PAGE);
-
-        if( !StringUtils.isEmpty(keywords) )
-        {
-            spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)).and(CategorySpecs.CategoryName(keywords));
-        }
-
-        Page<Category> pageRes = categoryRepository.findAll(spec, pageReq);
-
-        List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
-
-//        Specification<Categories> spec = CategoriesSpec.UserId(userId);
+//        Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
 //        PageRequest pageReq = PageRequest.of( page - 1 , PER_PAGE);
-
+//
 //        if( !StringUtils.isEmpty(keywords) )
 //        {
 //            spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)).and(CategorySpecs.CategoryName(keywords));
 //        }
+//
+//        Page<Category> pageRes = categoryRepository.findAll(spec, pageReq);
+//
+//        List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 
-        //Page<Categories> pageRes = categoryMongoRepository.findAll(spec, pageReq);
+//        HashMap<String, Object> resHm = new HashMap<>();
+//        resHm.put("categories", categories);
+//        resHm.put("total", pageRes.getTotalElements());
+//        resHm.put("totalPage", pageRes.getTotalPages());
+//        resHm.put("perPage", PER_PAGE);
+//        resHm.put("page", page);
 
-        //Page<Categories> pageRes = categoryMongoRepository.findAll(pageReq);
-
-        //List<CategoryDto> categories = pageRes.getContent().stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
+        List<Categories> categories = categoryMongoRepository.findByUserIdAndKeyword(userId, keywords);
+        HashMap<String, Integer> totalRes = categoryMongoRepository.findTotalCountByUserIdAndKeyWord(userId, keywords);
+        Integer totalCount = !totalRes.isEmpty() ? totalRes.get("categories") : 0;
 
         HashMap<String, Object> resHm = new HashMap<>();
-        //resHm.put("categories", pageRes.getContent());
-        resHm.put("categories", categories);
-        resHm.put("total", pageRes.getTotalElements());
-        resHm.put("totalPage", pageRes.getTotalPages());
+        resHm.put("categories", categories.size() > 0 ? categories.get(0).getCategories() : new ArrayList<>());
+        resHm.put("total", totalCount);
+        resHm.put("totalPage", Math.ceil((double) totalCount / (double) PER_PAGE));
         resHm.put("perPage", PER_PAGE);
         resHm.put("page", page);
 

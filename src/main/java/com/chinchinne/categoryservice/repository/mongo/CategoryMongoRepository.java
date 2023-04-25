@@ -1,20 +1,41 @@
 package com.chinchinne.categoryservice.repository.mongo;
 
-import com.chinchinne.categoryservice.domain.document.Categories;
 import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import com.chinchinne.categoryservice.domain.document.Categories;
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
+@Repository( value = "categoryMongoRepository" )
 public interface CategoryMongoRepository extends MongoRepository<Categories, ObjectId>
     {
-        Optional<Categories> findByUserId(String userId);
+        @Aggregation( pipeline =
+        {
+             "{ $match : { userId: ?0 } }"
+            ,"{ $unwind : '$categories' }"
+            ,"{ $match : {'categories.name' : { $regex : ?1}}}"
+            ,"{ $skip : 0 }"
+            ,"{ $limit : 5 }"
+            ,"{ $group : { _id : '$userId', categories : { $push : '$categories' } } }"
+            ,"{ $project : { _id: 0, userId : '$_id', categories : '$categories' } }"
+        })
+        //@Query( value = "{ 'userId': { $eq : ?0 }, 'categories' : { $slice : [0, 5] }}" )
+        List<Categories> findByUserIdAndKeyword(@Param("userId") String userId, @Param("keyword") String keyword);
 
-//        Page<Categories> findAll(Specification<Categories> spec, Pageable pageable);
-//        Page<Categories> findAll(Pageable pageable);
+        @Aggregation(pipeline =
+        {
+             "{ $match : { userId: ?0 } }"
+            ,"{ $unwind : '$categories' }"
+            ,"{ $match : {'categories.name' : { $regex : ?1}}}"
+            ,"{ $group : { _id : '$userId', categories : { $push : '$categories' } } }"
+            ,"{ $project : { _id: 0, categories : { $size :  '$categories'} } }"
+        })
+        HashMap<String, Integer> findTotalCountByUserIdAndKeyWord(@Param("userId") String userId, @Param("keyword") String keyword);
 
         Categories save(Categories categories);
 }
