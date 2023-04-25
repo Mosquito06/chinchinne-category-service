@@ -71,7 +71,7 @@ public class CategoryService
 
         // MongoDB Upsert
         MColor color = new MColor(categoryDto.getBackColor(), categoryDto.getTextColor());
-        MCategory mCategory = new MCategory(categoryDto.getName(), color, valueOf(LocalDateTime.now()));
+        MCategory mCategory = new MCategory(category.getCategoryId(), categoryDto.getName(), color, valueOf(LocalDateTime.now()));
 
         Query query = new Query(Criteria.where("userId").is(categoryDto.getUserId()));
         Update update = new Update();

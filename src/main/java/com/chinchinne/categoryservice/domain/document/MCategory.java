@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -19,7 +20,8 @@ import static java.sql.Timestamp.valueOf;
 public class MCategory
 {
     @Id
-    private ObjectId categoryId;
+    @Field("id")
+    private BigInteger categoryId;
 
     @Field("name")
     private String name;
@@ -35,8 +37,9 @@ public class MCategory
     @Temporal(TemporalType.TIMESTAMP)
     private Date modDate;
 
-    public MCategory(String name, MColor color, Date regDate)
+    public MCategory(BigInteger categoryId, String name, MColor color, Date regDate)
     {
+        this.categoryId = categoryId;
         this.name = name;
         this.color = color;
         this.regDate = regDate;
