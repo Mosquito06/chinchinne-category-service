@@ -1,19 +1,24 @@
 package com.chinchinne.categoryservice.repository.mongo;
 
-import org.bson.types.ObjectId;
 import com.chinchinne.categoryservice.domain.document.Categories;
+import org.bson.types.ObjectId;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Repository( value = "categoryMongoRepository" )
 public interface CategoryMongoRepository extends MongoRepository<Categories, ObjectId>
     {
+        @Query( value = "{ 'userId': { $eq : ?0 } }" )
+        List<Categories> findAllByUserId(@Param("userId") String userId);
+
         @Aggregation( pipeline =
         {
              "{ $match : { userId: ?0 } }"

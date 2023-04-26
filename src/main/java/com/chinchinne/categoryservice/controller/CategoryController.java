@@ -5,21 +5,15 @@ import com.chinchinne.categoryservice.domain.document.Categories;
 import com.chinchinne.categoryservice.domain.document.MCategory;
 import com.chinchinne.categoryservice.domain.entity.Category;
 import com.chinchinne.categoryservice.domain.model.Common;
-import com.chinchinne.categoryservice.domain.value.UserId;
 import com.chinchinne.categoryservice.exception.CustomException;
 import com.chinchinne.categoryservice.model.CategoryDto;
 import com.chinchinne.categoryservice.model.ErrorCode;
 import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.repository.mongo.CategoryMongoRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
-import com.chinchinne.categoryservice.spec.CategoriesSpec;
 import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
-import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,12 +50,16 @@ public class CategoryController
     }
 
     @GetMapping("/{userId}/all/categories")
-    public ResponseEntity<List<CategoryDto>> getAllCategories(@PathVariable String userId)
+    public ResponseEntity<List<MCategory>> getAllCategories(@PathVariable String userId)
     {
-        List<Category> categories = categoryRepository.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)))
-                                                      .orElseGet(ArrayList::new);
+//        List<Category> categories = categoryRepository.findAll(CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO)))
+//                                                      .orElseGet(ArrayList::new);
+//
+//        List<CategoryDto> res = categories.stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 
-        List<CategoryDto> res = categories.stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
+        List<Categories> categories = categoryMongoRepository.findAllByUserId(userId);
+
+        List<MCategory> res = categories.size() > 0 ? categories.get(0).getCategories() : new ArrayList<>();
 
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
