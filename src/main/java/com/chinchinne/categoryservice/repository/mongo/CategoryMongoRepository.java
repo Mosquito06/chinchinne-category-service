@@ -19,13 +19,13 @@ public interface CategoryMongoRepository extends MongoRepository<Categories, Obj
              "{ $match : { userId: ?0 } }"
             ,"{ $unwind : '$categories' }"
             ,"{ $match : {'categories.name' : { $regex : ?1}}}"
-            ,"{ $skip : 0 }"
-            ,"{ $limit : 5 }"
+            ,"{ $skip : ?2 }"
+            ,"{ $limit : ?3 }"
             ,"{ $group : { _id : '$userId', categories : { $push : '$categories' } } }"
             ,"{ $project : { _id: 0, userId : '$_id', categories : '$categories' } }"
         })
         //@Query( value = "{ 'userId': { $eq : ?0 }, 'categories' : { $slice : [0, 5] }}" )
-        List<Categories> findByUserIdAndKeyword(@Param("userId") String userId, @Param("keyword") String keyword);
+        List<Categories> findByUserIdAndKeyword(@Param("userId") String userId, @Param("keyword") String keyword, @Param("skip") int skip, @Param("limit") int limit);
 
         @Aggregation(pipeline =
         {

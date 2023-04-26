@@ -21,7 +21,7 @@ public class MCategory
 {
     @Id
     @Field("id")
-    private BigInteger categoryId;
+    private BigInteger id;
 
     @Field("name")
     private String name;
@@ -37,9 +37,9 @@ public class MCategory
     @Temporal(TemporalType.TIMESTAMP)
     private Date modDate;
 
-    public MCategory(BigInteger categoryId, String name, MColor color, Date regDate)
+    public MCategory(BigInteger id, String name, MColor color, Date regDate)
     {
-        this.categoryId = categoryId;
+        this.id = id;
         this.name = name;
         this.color = color;
         this.regDate = regDate;

@@ -67,7 +67,7 @@ public class CategoryController
     }
 
     @GetMapping("/{userId}/categories")
-    public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false) String keywords)
+    public ResponseEntity<HashMap<String, Object>> getCategories(@PathVariable String userId, @RequestParam(required = true) int page, @RequestParam(required = false, defaultValue = "") String keywords)
     {
 //        Specification<Category> spec = CategorySpecs.UserId(new UserId(userId)).and(CategorySpecs.DelYn(Common.NO));
 //        PageRequest pageReq = PageRequest.of( page - 1 , PER_PAGE);
@@ -88,7 +88,9 @@ public class CategoryController
 //        resHm.put("perPage", PER_PAGE);
 //        resHm.put("page", page);
 
-        List<Categories> categories = categoryMongoRepository.findByUserIdAndKeyword(userId, keywords);
+        int skip = ( page - 1 ) * PER_PAGE;
+
+        List<Categories> categories = categoryMongoRepository.findByUserIdAndKeyword(userId, keywords, skip, PER_PAGE);
         HashMap<String, Integer> totalRes = categoryMongoRepository.findTotalCountByUserIdAndKeyWord(userId, keywords);
         Integer totalCount = !totalRes.isEmpty() ? totalRes.get("categories") : 0;
 
