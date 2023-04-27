@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,7 +18,17 @@ import java.util.List;
 public interface CategoryMongoRepository extends MongoRepository<Categories, ObjectId>
     {
         @Query( value = "{ 'userId': { $eq : ?0 } }" )
-        List<Categories> findAllByUserId(@Param("userId") String userId);
+        List<Categories> findByUserId(@Param("userId") String userId);
+
+        @Aggregation( pipeline =
+        {
+             "{ $match : { userId: ?0 } }"
+            ,"{ $unwind : '$categories' }"
+            ,"{ $match : { 'categories.id' : ?1 }}"
+            ,"{ $group : { _id : '$userId', categories : { $push : '$categories' } } }"
+            ,"{ $project : { _id: 0, userId : '$_id', categories : '$categories' } }"
+        })
+        List<Categories> findByUserIdAndCategoryId(@Param("userId") String userId, @Param("categoryId") BigInteger categoryId);
 
         @Aggregation( pipeline =
         {

@@ -3,15 +3,12 @@ package com.chinchinne.categoryservice.controller;
 import com.chinchinne.categoryservice.dao.CategoryDao;
 import com.chinchinne.categoryservice.domain.document.Categories;
 import com.chinchinne.categoryservice.domain.document.MCategory;
-import com.chinchinne.categoryservice.domain.entity.Category;
-import com.chinchinne.categoryservice.domain.model.Common;
 import com.chinchinne.categoryservice.exception.CustomException;
 import com.chinchinne.categoryservice.model.CategoryDto;
 import com.chinchinne.categoryservice.model.ErrorCode;
 import com.chinchinne.categoryservice.repository.jpa.CategoryRepository;
 import com.chinchinne.categoryservice.repository.mongo.CategoryMongoRepository;
 import com.chinchinne.categoryservice.service.CategoryService;
-import com.chinchinne.categoryservice.spec.CategorySpecs;
 import com.chinchinne.categoryservice.vo.RequestCategory;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -57,7 +54,7 @@ public class CategoryController
 //
 //        List<CategoryDto> res = categories.stream().map(m -> modelMapper.map(m, CategoryDto.class)).collect(Collectors.toList());
 
-        List<Categories> categories = categoryMongoRepository.findAllByUserId(userId);
+        List<Categories> categories = categoryMongoRepository.findByUserId(userId);
 
         List<MCategory> res = categories.size() > 0 ? categories.get(0).getCategories() : new ArrayList<>();
 
@@ -103,19 +100,26 @@ public class CategoryController
     }
 
     @GetMapping("/{userId}/category/{categoryId}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable String userId, @PathVariable BigInteger categoryId)
+    public ResponseEntity<MCategory> getCategoryById(@PathVariable String userId, @PathVariable BigInteger categoryId)
     {
-        List<Category> categories = categoryRepository.findAll(CategorySpecs.CategoryId(categoryId).and(CategorySpecs.DelYn(Common.NO)))
-                                                      .orElseGet(ArrayList::new);
+//        List<Category> categories = categoryRepository.findAll(CategorySpecs.CategoryId(categoryId).and(CategorySpecs.DelYn(Common.NO)))
+//                                                      .orElseGet(ArrayList::new);
+
+        List<Categories> categories = categoryMongoRepository.findByUserIdAndCategoryId(userId, categoryId);
 
         if( categories.isEmpty() )
         {
             throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
         }
 
-        CategoryDto category = modelMapper.map(categories.get(0), CategoryDto.class);
+        if( categories.get(0).getCategories().isEmpty() )
+        {
+            throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(category);
+        // CategoryDto category = modelMapper.map(categories.get(0), CategoryDto.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(categories.get(0).getCategories().get(0));
     }
 
     @PostMapping("/{userId}/category")

@@ -1,5 +1,6 @@
 package com.chinchinne.categoryservice.domain.document;
 
+import com.chinchinne.categoryservice.domain.value.UserId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -19,7 +20,6 @@ import static java.sql.Timestamp.valueOf;
 @NoArgsConstructor
 public class MCategory
 {
-    @Id
     @Field("id")
     private BigInteger id;
 
@@ -45,6 +45,10 @@ public class MCategory
         this.regDate = regDate;
     }
 
-    // valueOf(LocalDateTime.now())
-    //public void
+    public void changeMCategory(String name, MColor color )
+    {
+        this.name = name;
+        this.color = color;
+        this.modDate = valueOf(LocalDateTime.now());
+    }
 }

@@ -17,7 +17,7 @@ public class Categories
 {
     @Id
     @Field("_id")
-    private ObjectId categoriesId;
+    private ObjectId id ;
 
     @Field("userId")
     private String userId;

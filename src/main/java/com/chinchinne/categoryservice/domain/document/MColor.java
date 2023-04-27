@@ -11,9 +11,6 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class MColor
 {
-    @Id
-    private ObjectId colorId;
-
     @Field("background")
     private String background;
 
