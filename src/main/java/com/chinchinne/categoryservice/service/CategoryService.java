@@ -88,11 +88,11 @@ public class CategoryService
     public CategoryDto changeCategory(CategoryDto categoryDto)
     {
         List<Category> categories = categoryRepository.findAll(CategorySpecs.CategoryId(categoryDto.getId()).and(CategorySpecs.DelYn(Common.NO)))
-                    .orElseGet(ArrayList::new);
+                                                      .orElseGet(ArrayList::new);
 
-            if( categories.isEmpty() )
-            {
-                throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
+        if( categories.isEmpty() )
+        {
+            throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
         }
 
         Category category = categories.get(0);
@@ -104,38 +104,20 @@ public class CategoryService
             ,categoryDto.getTextColor()
         );
 
-        List<Categories> mCategories = categoryMongoRepository.findByUserIdAndCategoryId(categoryDto.getUserId(), categoryDto.getId());
-
-        if( mCategories.isEmpty() )
-        {
-            throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
-        }
-
-        if( mCategories.get(0).getCategories().isEmpty() )
-        {
-            throw new CustomException(ErrorCode.NOT_FOUND_RECORD);
-        }
-
-        MCategory mCategory = mCategories.get(0).getCategories().get(0);
-        mCategory.changeMCategory
-        (
-             categoryDto.getName()
-            ,new MColor(categoryDto.getBackColor(), categoryDto.getTextColor())
-        );
-
         // MongoDB Upsert
         Query query = new Query
         (
-            Criteria.where("userId").is(categoryDto.getUserId()).and("categories").elemMatch(Criteria.where("id").is(mCategory.getId()))
+            Criteria.where("userId").is(categoryDto.getUserId()).and("categories").elemMatch(Criteria.where("id").is(category.getCategoryId()))
         );
+        query.fields().include("categories.$");
 
         Update update = new Update();
 
-        update.set("name", mCategory.getName());
-        update.set("color", mCategory.getColor());
-        update.set("modDate", mCategory.getModDate());
+        update.set("categories.$.name", category.getCategoryName());
+        update.set("categories.$.color", new MColor(category.getBackColor(), category.getTextColor()));
+        update.set("categories.$.modDate", category.getModDate());
 
-        mongoTemplate.updateMulti(query, update, MCategory.class);
+        mongoTemplate.updateFirst(query, update, Categories.class);
 
         return modelMapper.map(category, CategoryDto.class);
     }
