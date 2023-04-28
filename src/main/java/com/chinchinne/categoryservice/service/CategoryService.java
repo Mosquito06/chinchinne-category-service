@@ -149,6 +149,24 @@ public class CategoryService
             ,Common.YES
         );
 
+        List<BigInteger> MCategoryIds =  categoryIds.stream().map( category ->category.getId() ).collect(Collectors.toList());
+
+        Criteria criteria = new Criteria().andOperator
+        (
+             Criteria.where("userId").is(categories.get(0).getUserId())
+            ,Criteria.where("categories").elemMatch(Criteria.where("id").in(MCategoryIds))
+        );
+
+        Query query = new Query
+        (
+            Criteria.where("userId").is(categories.get(0).getUserId()).and("categories").elemMatch(Criteria.where("categories").in(MCategoryIds))
+        );
+        //query.fields().include("categories.$");
+
+        List<Categories> categories1 = mongoTemplate.find(query, Categories.class);
+
+        mongoTemplate.remove(query, Categories.class);
+
         return categories.stream().map( m -> modelMapper.map(m, CategoryDto.class) ).collect(Collectors.toList());
     }
 }
