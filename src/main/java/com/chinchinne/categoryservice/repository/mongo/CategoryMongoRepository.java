@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Repository( value = "categoryMongoRepository" )
 public interface CategoryMongoRepository extends MongoRepository<Categories, ObjectId>
@@ -51,7 +52,7 @@ public interface CategoryMongoRepository extends MongoRepository<Categories, Obj
             ,"{ $group : { _id : '$userId', categories : { $push : '$categories' } } }"
             ,"{ $project : { _id: 0, categories : { $size :  '$categories'} } }"
         })
-        HashMap<String, Integer> findTotalCountByUserIdAndKeyWord(@Param("userId") String userId, @Param("keyword") String keyword);
+        Optional<HashMap<String, Integer>> findTotalCountByUserIdAndKeyWord(@Param("userId") String userId, @Param("keyword") String keyword);
 
         Categories save(Categories categories);
 }

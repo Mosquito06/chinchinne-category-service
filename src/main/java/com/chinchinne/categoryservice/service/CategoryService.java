@@ -18,6 +18,7 @@ import com.chinchinne.categoryservice.spec.CategorySpecs;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -151,21 +152,35 @@ public class CategoryService
 
         List<BigInteger> MCategoryIds =  categoryIds.stream().map( category ->category.getId() ).collect(Collectors.toList());
 
-        Criteria criteria = new Criteria().andOperator
+        Aggregation aggregation = Aggregation.newAggregation
         (
-             Criteria.where("userId").is(categories.get(0).getUserId())
-            ,Criteria.where("categories").elemMatch(Criteria.where("id").in(MCategoryIds))
+             Aggregation.match( Criteria.where("userId").is(categories.get(0).getUserId().getId()) )
+            ,Aggregation.unwind("categories")
+            ,Aggregation.match( Criteria.where("categories.id").in(MCategoryIds) )  // is(categories.get(0).getUserId())
+            ,Aggregation.group("_id").push("categories").as("categories")
         );
 
+
+//        Criteria criteria = new Criteria().andOperator
+//        (
+//             Criteria.where("userId").is(categories.get(0).getUserId())
+//            ,Criteria.where("categories").elemMatch(Criteria.where("id").in(MCategoryIds))
+//        );
+//
         Query query = new Query
         (
-            Criteria.where("userId").is(categories.get(0).getUserId()).and("categories").elemMatch(Criteria.where("categories").in(MCategoryIds))
+            //Criteria.where("userId").is(categories.get(0).getUserId().getId()).and("categories").elemMatch(Criteria.where("id").in(MCategoryIds))
+            Criteria.where("categories").elemMatch(Criteria.where("id").in(MCategoryIds))
         );
         //query.fields().include("categories.$");
 
         List<Categories> categories1 = mongoTemplate.find(query, Categories.class);
 
-        mongoTemplate.remove(query, Categories.class);
+        //List<Categories> categories1 = mongoTemplate.aggregate(aggregation, "category", Categories.class).getMappedResults();
+
+        //mongoTemplate.remove(query, Categories.class);
+
+        //mongoTemplate.updateMulti(query, Categories.class);
 
         return categories.stream().map( m -> modelMapper.map(m, CategoryDto.class) ).collect(Collectors.toList());
     }

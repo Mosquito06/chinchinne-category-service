@@ -86,7 +86,7 @@ public class CategoryController
         int skip = ( page - 1 ) * PER_PAGE;
 
         List<Categories> categories = categoryMongoRepository.findByUserIdAndKeyword(userId, keywords, skip, PER_PAGE);
-        HashMap<String, Integer> totalRes = categoryMongoRepository.findTotalCountByUserIdAndKeyWord(userId, keywords);
+        HashMap<String, Integer> totalRes = categoryMongoRepository.findTotalCountByUserIdAndKeyWord(userId, keywords).orElseGet(HashMap<String, Integer>::new);
         Integer totalCount = !totalRes.isEmpty() ? totalRes.get("categories") : 0;
 
         HashMap<String, Object> resHm = new HashMap<>();
