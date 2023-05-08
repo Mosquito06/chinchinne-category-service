@@ -151,9 +151,9 @@ public class CategoryService
             ,Common.YES
         );
 
+        // MongoDB Upsert
         List<BigInteger> MCategoryIds =  categoryIds.stream().map( category ->category.getId() ).collect(Collectors.toList());
 
-        // MongoDB Upsert
         Aggregation aggregation = Aggregation.newAggregation
         (
              Aggregation.match( Criteria.where("userId").is(categories.get(0).getUserId().getId()) )
@@ -162,7 +162,14 @@ public class CategoryService
             ,Aggregation.group("_id").first("userId").as("userId").push("categories").as("categories")
         );
 
-        Categories mCategories = mongoTemplate.aggregate(aggregation, "category", Categories.class).getMappedResults().get(0);
+        List<Categories> resCategories = mongoTemplate.aggregate(aggregation, "category", Categories.class).getMappedResults();
+
+        Categories mCategories = new Categories(categories.get(0).getUserId().getId(), new ArrayList<>());
+
+        if( !resCategories.isEmpty() )
+        {
+            mCategories = resCategories.get(0);
+        }
 
         Query query = new Query(Criteria.where("userId").is(mCategories.getUserId()));
         Update update = new Update();
